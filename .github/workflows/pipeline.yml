@@ -7,7 +7,7 @@ on:
 
 jobs:
   simple_deployment_pipeline:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,7 +26,6 @@ jobs:
       - name: Test:unit
         run: npm run test
 
-      # Adding Playwright steps below
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
@@ -40,3 +39,10 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: RAILWAY_TOKEN=47f3e907-a5b5-483e-a039-cf022198b64d railway up --service=6e537bb0-d6a9-44b5-a4b6-8e31a97314fe
